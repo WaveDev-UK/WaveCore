@@ -13,6 +13,8 @@ public abstract class WaveSubCommand implements WaveCommandFrame {
     private final String label;
     private String permission;
     private String usage;
+    private boolean requiresPlayer;
+
 
 
 }

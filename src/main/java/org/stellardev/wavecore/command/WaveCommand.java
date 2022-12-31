@@ -26,32 +26,29 @@ public abstract class WaveCommand extends Command implements WaveCommandFrame {
     @Override
     public boolean execute(CommandSender commandSender, String s, String[] strings) {
         WaveCommandSender wCS = WaveCommandSender.of(commandSender);
-        if(strings.length == 0){
-            if(!wCS.isAuthorised(this)){
-                CoreMessages.NO_PERMISSION.send(wCS);
-                return true;
-            }
-
-            return perform(wCS, strings);
+        if(strings.length == 0 || getSubCommand(strings[0]) == null) {
+            CommandAuthResponse authResponse = wCS.authorise(this);
+            return authenticateCommand(strings, wCS, authResponse);
         }
 
-        if(getSubCommand(strings[0]) == null){
-            if(wCS.isAuthorised(this)) {
-                return perform(wCS, strings);
-            }else{
-                CoreMessages.NO_PERMISSION.send(wCS);
-                return true;
-            }
-        }
 
         WaveSubCommand subCommand = getSubCommand(strings[0]);
-        if(!wCS.isAuthorised(subCommand)){
-            CoreMessages.NO_PERMISSION.send(wCS);
-            return true;
-        }
+        CommandAuthResponse authResponse = wCS.authorise(subCommand);
+        return authenticateCommand(strings, wCS, authResponse);
+    }
 
-        subCommand.perform(wCS, strings);
-        return true;
+    private boolean authenticateCommand(String[] strings, WaveCommandSender wCS, CommandAuthResponse authResponse) {
+        switch (authResponse){
+            case INVALID_SENDER:
+                CoreMessages.INVALID_SENDER.send(wCS);
+                return true;
+            case NO_PERMISSION:
+                CoreMessages.NO_PERMISSION.send(wCS);
+                return true;
+            case AUTHENTICATED:
+                return perform(wCS, strings);
+        }
+        return false;
     }
 
     public WaveSubCommand getSubCommand(String label){

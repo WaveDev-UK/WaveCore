@@ -28,12 +28,16 @@ public class WaveCommandSender {
         return new WaveCommandSender(commandSender);
     }
 
-    public boolean isAuthorised(WaveCommandFrame waveCommandFrame){
-        if(waveCommandFrame.getPermission() == null) return true;
-        if(!isPlayer()){
-            return true;
+    public CommandAuthResponse authorise(WaveCommandFrame waveCommandFrame){
+        if(!isPlayer() && waveCommandFrame.isRequiresPlayer()){
+            return CommandAuthResponse.INVALID_SENDER;
         }
-        return getPlayer().hasPermission(waveCommandFrame.getPermission());
+
+        if(waveCommandFrame.getPermission() != null && !commandSender.hasPermission(waveCommandFrame.getPermission())){
+            return CommandAuthResponse.NO_PERMISSION;
+        }
+
+        return CommandAuthResponse.AUTHENTICATED;
     }
 
     public void sendMessage(String message){
