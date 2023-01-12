@@ -35,8 +35,13 @@ public class YamlFile {
         this.name = name;
         this.path = path;
         this.folder = folder;
+
         if (this.folder == null) {
-            this.file = new File(this.path, this.name);
+            File directory = new File(path);
+            if(!directory.exists()){
+                directory.mkdir();
+            }
+            this.file = new File(directory, this.name);
         } else {
             new File(this.path + File.separator + folder).mkdir();
             this.file = new File(this.path + File.separator + folder, this.name);

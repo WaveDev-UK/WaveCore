@@ -1,13 +1,10 @@
 package org.stellardev.wavecore.configuration;
 
+import lombok.SneakyThrows;
 import org.stellardev.wavecore.file.YamlFile;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.*;
+import java.util.*;
 
 
 public class Serialization {
@@ -54,5 +51,54 @@ public class Serialization {
         return null;
 
     }
+
+    @SneakyThrows
+    public static Map<String, Object> serialize(Object obj){
+        Map<String, Object> map = new HashMap<>();
+        for (Field field : obj.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            Object classObject = field.get(obj);
+            if(classObject instanceof Serializable){
+                Map<String, Object> serialized = serialize(classObject);
+                for(String key: serialized.keySet()){
+                    map.put(field.getName() + "." + key, serialized.get(key));
+                }
+            }else if (classObject instanceof List){
+
+                List<?> list = (List<?>) classObject;
+
+                if(list.isEmpty()){
+                    continue;
+                }
+
+
+                if(list.get(0) instanceof Serializable){
+
+                    for(int i = 0; i < list.size(); i++){
+                        Map<String, Object> serialized = serialize(list.get(i));
+                        for(String key: serialized.keySet()){
+                            Object object = serialized.get(key);
+                            if(object instanceof Serializable){
+                                Map<String, Object> subObjectSerialized = serialize(object);
+                                for(String subObjectKey: subObjectSerialized.keySet()){
+                                    map.put(field.getName() + "." + i + "." + key + "." + subObjectKey, subObjectSerialized.get(subObjectKey));
+                                }
+                            }else{
+                                map.put(field.getName() + "." + i + "." + key, object);
+                            }
+                        }
+                    }
+
+                }else{
+                    map.put(field.getName(), list);
+                }
+
+            }else{
+                map.put(field.getName(), classObject);
+            }
+        }
+        return map;
+    }
+
 
 }

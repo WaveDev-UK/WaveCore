@@ -4,5 +4,8 @@ import java.util.Map;
 
 public interface Serializable {
 
-     Map<String, Object> serialize();
+     default Map<String, Object> serialize(){
+         return Serialization.serialize(this);
+     }
+
 }
