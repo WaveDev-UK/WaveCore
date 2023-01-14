@@ -53,49 +53,47 @@ public class Serialization {
     }
 
     @SneakyThrows
-    public static Map<String, Object> serialize(Object obj){
+    public static Map<String, Object> serialize(Object obj) {
         Map<String, Object> map = new HashMap<>();
         for (Field field : obj.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             Object classObject = field.get(obj);
-            if(classObject instanceof Serializable){
+            if (classObject instanceof Serializable) {
                 Map<String, Object> serialized = serialize(classObject);
-                for(String key: serialized.keySet()){
+                for (String key : serialized.keySet()) {
                     map.put(field.getName() + "." + key, serialized.get(key));
                 }
-            }else if (classObject instanceof List){
+            } else if (classObject instanceof List) {
 
                 List<?> list = (List<?>) classObject;
 
-                if(list.isEmpty()){
+                if (list.isEmpty()) {
                     continue;
                 }
 
+                if (list.get(0) instanceof Serializable) {
 
-                if(list.get(0) instanceof Serializable){
-
-                    for(int i = 0; i < list.size(); i++){
+                    for (int i = 0; i < list.size(); i++) {
                         Map<String, Object> serialized = serialize(list.get(i));
-                        for(String key: serialized.keySet()){
+                        for (String key : serialized.keySet()) {
                             Object object = serialized.get(key);
-                            if(object instanceof Serializable){
+                            if (object instanceof Serializable) {
                                 Map<String, Object> subObjectSerialized = serialize(object);
-                                for(String subObjectKey: subObjectSerialized.keySet()){
+                                for (String subObjectKey : subObjectSerialized.keySet()) {
                                     map.put(field.getName() + "." + i + "." + key + "." + subObjectKey, subObjectSerialized.get(subObjectKey));
                                 }
-                            }else{
-                                map.put(field.getName() + "." + i + "." + key, object);
+                                continue;
                             }
+                            map.put(field.getName() + "." + i + "." + key, object);
                         }
                     }
-
-                }else{
-                    map.put(field.getName(), list);
+                    continue;
                 }
-
-            }else{
+                map.put(field.getName(), list);
+            } else {
                 map.put(field.getName(), classObject);
             }
+
         }
         return map;
     }
