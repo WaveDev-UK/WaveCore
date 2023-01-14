@@ -49,7 +49,13 @@ public class SQLClient {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> Bukkit.getScheduler().runTaskAsynchronously(plugin, this::openConnection), 40, 40);
     }
 
-    public void sendUpdateSync(String update) {
+    public void sendUpdateAsync(String update) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            sendUpdateSync(update);
+        });
+    }
+
+    public void sendUpdateSync(String update){
         try {
             PreparedStatement statement = connection.prepareStatement(update);
             statement.executeUpdate();
@@ -98,7 +104,7 @@ public class SQLClient {
         for (SQLColumn sqlColumn : sqlColumns) {
             createBuilder.addColumn(sqlColumn);
         }
-        sendUpdateSync(createBuilder.build());
+        sendUpdateAsync(createBuilder.build());
     }
 
     public void insert(String table, SQLData... sqlDatas) {
@@ -106,13 +112,13 @@ public class SQLClient {
         for (SQLData sqlData : sqlDatas) {
             insertBuilder.addData(sqlData);
         }
-        sendUpdateSync(insertBuilder.build());
+        sendUpdateAsync(insertBuilder.build());
     }
 
     public void update(String table, SQLData[] sqlData, SQLRequirement[] sqlRequirements) {
         UpdateBuilder updateBuilder = new UpdateBuilder(table, sqlData);
         updateBuilder.setRequirements(sqlRequirements);
-        sendUpdateSync(updateBuilder.build());
+        sendUpdateAsync(updateBuilder.build());
     }
 
     public void delete(String table, SQLRequirement... sqlRequirements) {

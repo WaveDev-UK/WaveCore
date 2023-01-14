@@ -58,6 +58,9 @@ public class Serialization {
         for (Field field : obj.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             Object classObject = field.get(obj);
+            if(classObject == null){
+                continue;
+            }
             if (classObject instanceof Serializable) {
                 Map<String, Object> serialized = serialize(classObject);
                 for (String key : serialized.keySet()) {
