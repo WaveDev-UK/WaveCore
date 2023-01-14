@@ -54,15 +54,19 @@ public class Serialization {
 
     @SneakyThrows
     public static Map<String, Object> serialize(Object obj) {
+        Method method = obj.getClass().getMethod("serialize");
+        if(method != null && Arrays.stream(method.getAnnotations()).anyMatch(Override.class::isInstance)) {
+            return (Map<String, Object>) method.invoke(obj);
+        }
         Map<String, Object> map = new HashMap<>();
         for (Field field : obj.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             Object classObject = field.get(obj);
-            if(classObject == null){
+            if(!isInitialized(field, obj)){
                 continue;
             }
             if (classObject instanceof Serializable) {
-                Map<String, Object> serialized = serialize(classObject);
+                Map<String, Object> serialized = ((Serializable)classObject).serialize();
                 for (String key : serialized.keySet()) {
                     map.put(field.getName() + "." + key, serialized.get(key));
                 }
@@ -77,11 +81,11 @@ public class Serialization {
                 if (list.get(0) instanceof Serializable) {
 
                     for (int i = 0; i < list.size(); i++) {
-                        Map<String, Object> serialized = serialize(list.get(i));
+                        Map<String, Object> serialized = ((Serializable) list.get(i)).serialize();
                         for (String key : serialized.keySet()) {
                             Object object = serialized.get(key);
                             if (object instanceof Serializable) {
-                                Map<String, Object> subObjectSerialized = serialize(object);
+                                Map<String, Object> subObjectSerialized = ((Serializable) object).serialize();
                                 for (String subObjectKey : subObjectSerialized.keySet()) {
                                     map.put(field.getName() + "." + i + "." + key + "." + subObjectKey, subObjectSerialized.get(subObjectKey));
                                 }
@@ -101,5 +105,27 @@ public class Serialization {
         return map;
     }
 
+    private static boolean isInitialized(Field field, Object obj) {
+        try {
+            field.setAccessible(true);
+            switch (field.getType().getName()) {
+                case "int":
+                    return field.getInt(obj) != 0;
+                case "double":
+                    return field.getDouble(obj) != 0;
+                case "float":
+                    return field.getFloat(obj) != 0;
+                case "long":
+                    return field.getLong(obj) != 0;
+                case "boolean":
+                    return field.getBoolean(obj);
+                default:
+                    return field.get(obj) != null;
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 }
