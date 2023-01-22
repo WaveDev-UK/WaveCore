@@ -28,16 +28,16 @@ public abstract class WaveCommand extends Command implements WaveCommandFrame {
         WaveCommandSender wCS = WaveCommandSender.of(commandSender);
         if(strings.length == 0 || getSubCommand(strings[0]) == null) {
             CommandAuthResponse authResponse = wCS.authorise(this);
-            return authenticateCommand(strings, wCS, authResponse);
+            return authenticateCommand(this, strings, wCS, authResponse);
         }
 
 
         WaveSubCommand subCommand = getSubCommand(strings[0]);
         CommandAuthResponse authResponse = wCS.authorise(subCommand);
-        return authenticateCommand(strings, wCS, authResponse);
+        return authenticateCommand(subCommand, strings, wCS, authResponse);
     }
 
-    private boolean authenticateCommand(String[] strings, WaveCommandSender wCS, CommandAuthResponse authResponse) {
+    private boolean authenticateCommand(WaveCommandFrame waveCommandFrame, String[] strings, WaveCommandSender wCS, CommandAuthResponse authResponse) {
         switch (authResponse){
             case INVALID_SENDER:
                 CoreMessages.INVALID_SENDER.send(wCS);
@@ -46,7 +46,7 @@ public abstract class WaveCommand extends Command implements WaveCommandFrame {
                 CoreMessages.NO_PERMISSION.send(wCS);
                 return true;
             case AUTHENTICATED:
-                return perform(wCS, strings);
+                return waveCommandFrame.perform(wCS, strings);
         }
         return false;
     }

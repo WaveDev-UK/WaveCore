@@ -31,23 +31,20 @@ public class Item implements Serializable {
     private List<ItemFlag> itemFlags;
     private int amount;
 
+    private String skull;
     private int modelData;
 
     public ItemStack toItemStack(Placeholder... placeholders) {
-        if (material == null) {
-            System.out.println("Material is fooked v1");
+        if (material == null && skull == null) {
             return null;
         }
 
-        this.material = material.toUpperCase();
-        if (Material.getMaterial(material) == null) {
-            System.out.println("Material is fooked");
+
+        ItemStack itemStack = skull == null? new ItemStack(Material.valueOf(material), amount, data == null? 0: data): SkullCreator.getSkull(skull);
+
+        if(itemStack == null){
             return null;
         }
-
-        System.out.println("AMOUNT: " + amount);
-
-        ItemStack itemStack = new ItemStack(Material.getMaterial(material), amount <= 0 ? 1 : amount, data != null ? data : 0);
 
         ItemMeta itemMeta = itemStack.getItemMeta();
 
@@ -89,7 +86,12 @@ public class Item implements Serializable {
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
-        map.put("id", material);
+        if(material != null) {
+            map.put("id", material);
+        }
+        if(skull != null){
+            map.put("skull", skull);
+        }
         if (data != null) {
             map.put("data", data.intValue());
         }
@@ -125,6 +127,18 @@ public class Item implements Serializable {
     public static Item deserialize(YamlFile yamlFile, String path) {
         YamlConfiguration c = yamlFile.getConfig();
         ItemBuilder build = Item.builder();
+        if(!c.contains(path + ".id") && !c.contains(path + ".skull")){
+            return null;
+        }
+
+        if(c.contains(path + ".id")) {
+            build.material(c.getString(path + ".id"));
+        }
+
+        if(c.contains(path + ".skull")){
+            build.skull(c.getString(path + ".skull"));
+        }
+
         build.material(c.getString(path + ".id"));
         if (c.contains(path + ".data")) {
             build.data((byte) c.getInt(path + ".data"));

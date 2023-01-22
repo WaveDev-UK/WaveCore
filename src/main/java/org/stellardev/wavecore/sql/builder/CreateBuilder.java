@@ -32,7 +32,7 @@ public class CreateBuilder {
         return this;
     }
 
-    public String build() {
+    public String build(boolean primaryKey) {
         int i = 1;
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE IF NOT EXISTS ").append(id).append(" (");
@@ -46,7 +46,9 @@ public class CreateBuilder {
             i++;
         }
 
-        query.append(", PRIMARY KEY (").append(primary.getId()).append(")");
+        if(primaryKey) {
+            query.append(", PRIMARY KEY (").append(primary.getId()).append(")");
+        }
         query.append(");");
         return query.toString();
     }

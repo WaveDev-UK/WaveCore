@@ -99,12 +99,12 @@ public class SQLClient {
         return data;
     }
 
-    public void createTable(String tableName, SQLColumn... sqlColumns) {
+    public void createTable(String tableName, boolean primaryKey, SQLColumn... sqlColumns) {
         CreateBuilder createBuilder = new CreateBuilder(tableName);
         for (SQLColumn sqlColumn : sqlColumns) {
             createBuilder.addColumn(sqlColumn);
         }
-        sendUpdateAsync(createBuilder.build());
+        sendUpdateAsync(createBuilder.build(primaryKey));
     }
 
     public void insert(String table, SQLData... sqlDatas) {
