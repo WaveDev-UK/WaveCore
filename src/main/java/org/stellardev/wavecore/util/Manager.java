@@ -1,5 +1,7 @@
 package org.stellardev.wavecore.util;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +20,14 @@ public abstract class Manager<K, V> {
 
    public V get(K key){
        return map.get(key);
+   }
+
+   public Collection<K> getAllKeys(){
+       return map.keySet();
+   }
+
+   public Collection<V> getAllValues() {
+       return map.values();
    }
 
     public void remove(K key){
