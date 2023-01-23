@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.stellardev.wavecore.message.CoreMessages;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +22,10 @@ public abstract class WaveCommand extends Command implements WaveCommandFrame {
     public WaveCommand(String name) {
         super(name);
         this.subCommands = new HashMap<>();
+    }
+
+    public Collection<WaveSubCommand> getSubCommands(){
+        return subCommands.values();
     }
 
     @Override
