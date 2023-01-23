@@ -6,7 +6,7 @@
 
     <groupId>org.stellardev</groupId>
     <artifactId>WaveCore</artifactId>
-    <version>1.0.12</version>
+    <version>1.0.13</version>
     <packaging>jar</packaging>
 
     <name>WaveCore</name>

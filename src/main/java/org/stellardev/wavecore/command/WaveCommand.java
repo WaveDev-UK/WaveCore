@@ -53,7 +53,7 @@ public abstract class WaveCommand extends Command implements WaveCommandFrame {
                 return true;
             case AUTHENTICATED:
                 String usage = waveCommandFrame.getUsage();
-                if(usage.split(" ").length -1 < strings.length) {
+                if(usage.split(" ").length -1 > strings.length) {
                     CoreMessages.INVALID_USAGE.send(wCS, new Placeholder("{usage}", usage));
                     return true;
                 }
