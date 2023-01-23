@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.stellardev.wavecore.message.CoreMessages;
+import org.stellardev.wavecore.util.Placeholder;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,6 +52,11 @@ public abstract class WaveCommand extends Command implements WaveCommandFrame {
                 CoreMessages.NO_PERMISSION.send(wCS);
                 return true;
             case AUTHENTICATED:
+                String usage = waveCommandFrame.getUsage();
+                if(usage.split(" ").length -1 < strings.length) {
+                    CoreMessages.INVALID_USAGE.send(wCS, new Placeholder("{usage}", usage));
+                    return true;
+                }
                 return waveCommandFrame.perform(wCS, strings);
         }
         return false;
