@@ -6,7 +6,7 @@
 
     <groupId>org.stellardev</groupId>
     <artifactId>WaveCore</artifactId>
-    <version>1.0.13</version>
+    <version>1.0.14</version>
     <packaging>jar</packaging>
 
     <name>WaveCore</name>
@@ -103,6 +103,11 @@
             <groupId>de.tr7zw</groupId>
             <artifactId>item-nbt-api</artifactId>
             <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.obermuhlner</groupId>
+            <artifactId>big-math</artifactId>
+            <version>2.3.0</version>
         </dependency>
     </dependencies>
 </project>
