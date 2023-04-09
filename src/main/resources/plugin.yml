@@ -1,6 +1,6 @@
 name: WaveCore
 version: '${project.version}'
-main: org.stellardev.wavecore.WaveCore
+main: dev.wave.wavecore.WaveCore
 api-version: 1.19
 authors: [ Wave ]
 description: Wave's Plugin Core

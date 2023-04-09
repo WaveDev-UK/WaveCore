@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.stellardev</groupId>
+    <groupId>dev.wave</groupId>
     <artifactId>WaveCore</artifactId>
-    <version>1.0.15</version>
+    <version>1.0.16</version>
     <packaging>jar</packaging>
 
     <name>WaveCore</name>
